@@ -2,7 +2,7 @@
 
 USERID=$(id -u)
 
-if [ $? -eq 0 ]
+if [ "$USERID" -eq 0 ]
 then
     echo "Root user is using"
 else
