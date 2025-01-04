@@ -1,8 +1,8 @@
 #!/bin/bash
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-RESET='\033[0;31m'
+RED='\e[31m'
+GREEN='\e[32m'
+RESET='\0e[31m'
 
 if [ 12 -eq 12 ];
    then
