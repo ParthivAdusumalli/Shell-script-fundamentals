@@ -2,7 +2,7 @@
 
 RED='\e[31m'
 GREEN='\e[32m'
-RESET='\e[31m'
+RESET='\e[0m'
 
 if [ 12 -eq 12 ];
    then
