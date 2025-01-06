@@ -1,10 +1,15 @@
 #!/bin/bash
 
 RED="\e[31m"
-GREEN="\e[33m"
-YELLOW="\e[32m"
+GREEN="\e[32m"
+YELLOW="\e[33m"
 DEF="\e[0m"
 
+USERNAME=$(id -u)
+if [ $USERNAME -ne 0 ]; then
+   echo "Run the script with Root user Privilages.."
+   exit 1 
+fi
 echo "Running the script as Root User..."
 DATE=$(date +%Y%m%d)
 Checking_Software()
@@ -24,7 +29,6 @@ Checking_Software()
     fi
   fi
 }
-Checking_Software git
 
 Checking_Software mysql-server
 
@@ -55,10 +59,11 @@ else
     echo -e "$RED Password already created or cant change now...For Quality Assurance added this action to logs.. $DEF"
 fi
 
-mysql &>>/var/log/InstallLogs/$DATE-Installation.log
+mysqladmin -uroot -p"$ROOT_PASSWORD" ping &>/dev/null
 if [ $? -eq 0 ]; then
-   echo "$GREEN DB SERVER IMPLEMENTED SUCCESSFULLY....$DEF"
+   echo -e "$GREEN DB SERVER IMPLEMENTED SUCCESSFULLY....$DEF"
 else
-    echo "$RED Implementing the DB Server Failed..Please Check Logs and Try again.."
+    echo -e "$RED Implementing the DB Server Failed..Please Check Logs and Try again..$DEF"
     exit 1
 fi
+
