@@ -5,7 +5,6 @@ GREEN="\e[33m"
 YELLOW="\e[32m"
 DEF="\e[0m"
 
-sudo su -
 echo "Running the script as Root User..."
 DATE=$(date +%Y/%m/%d)
 cat /var/log/$DATE-Installation.log > /dev/null 2>&1
