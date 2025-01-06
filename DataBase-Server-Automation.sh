@@ -6,7 +6,7 @@ YELLOW="\e[32m"
 DEF="\e[0m"
 
 echo "Running the script as Root User..."
-DATE=$(date +%Y/%m/%d)
+DATE=$(date +%Y%m%d)
 Checking_Software()
 {
   $1 -v > /dev/null 2>&1
