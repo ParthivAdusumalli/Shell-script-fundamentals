@@ -14,7 +14,7 @@ echo "Running the script as Root User..."
 DATE=$(date +%Y%m%d)
 Checking_Software()
 {
-  $1 -v > /dev/null 2>&1
+  dnf list installed|grep mysql > /dev/null 2>&1
   if [ $? -eq 0 ]; then
     echo -e "$YELLOW$1 is already Installed..$DEF"
   else
