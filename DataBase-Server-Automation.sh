@@ -7,12 +7,6 @@ DEF="\e[0m"
 
 echo "Running the script as Root User..."
 DATE=$(date +%Y/%m/%d)
-cat /var/log/$DATE-Installation.log > /dev/null 2>&1
-if [ $? -eq 0 ]; then
-   echo "$GREEN Logs file already Exist.. Installation Logs will be appended if applicable..$DEF"
-else 
-    touch /var/log/InstallLogs/"$DATE"-Installation.log
-fi
 Checking_Software()
 {
   $1 -v > /dev/null 2>&1
