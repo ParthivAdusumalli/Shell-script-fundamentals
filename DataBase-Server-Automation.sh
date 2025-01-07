@@ -12,6 +12,14 @@ if [ $USERNAME -ne 0 ]; then
 fi
 echo "Running the script as Root User..."
 DATE=$(date +%Y%m%d)
+
+if [ -d "/var/log/InstallLogs/" ]; then
+    echo "Directory /var/log/InstallLogs/ exists."
+else
+    echo "Directory does not exist. Creating Now.."
+    mkdir /var/log/InstallLogs/
+fi
+
 Checking_Software()
 {
   dnf list installed|grep mysql > /dev/null 2>&1
