@@ -60,12 +60,12 @@ Checking_Conf Enabled
 
 ROOT_PASSWORD="ExpenseApp@1"
 mysql_secure_installation --set-root-pass "$ROOT_PASSWORD" &>>/tmp/mysql_secure_error.log
-
+(cat /tmp/mysql_secure_error.log | grep "already set") &>/dev/null
 if [ $? -eq 0 ]; then
-   echo -e "$GREEN Root Password Set successfully..$DEF"
+   echo -e "$RED Password already created or cant change now...For Quality Assurance added this action to logs.. $DEF"
 else 
-    echo -e "$RED Password already created or cant change now...For Quality Assurance added this action to logs.. $DEF"
-fi
+    echo -e "$GREEN Root Password set successfully..$DEF"
+fi 
 
 mysqladmin -uroot -p"$ROOT_PASSWORD" ping &>/dev/null
 if [ $? -eq 0 ]; then
