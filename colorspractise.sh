@@ -4,7 +4,7 @@ RED='\e[31m'
 GREEN='\e[32m'
 RESET='\e[0m'
 
-if [ 12 -eq 12 ];
+if [ 11 -eq 12 ];
    then
         echo -e "$GREEN Condition Correct. $RESET"
 else

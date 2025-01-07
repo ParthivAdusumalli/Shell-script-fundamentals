@@ -67,10 +67,10 @@ else
     rm -rf /usr/share/nginx/html/* &>>"$LOG_FILE"
     if [ $? -eq 0 ]; then
         # Log the message indicating successful removal
-        echo "Removing HTML Files for the first time" >>"$LOG_FILE"
-        echo "HTML files in the Nginx directory have been successfully removed for the first time."
+        echo -e "$GREEN Removing HTML Files for the first time" >>"$LOG_FILE"
+        echo "HTML files in the Nginx directory have been successfully removed for the first time.$DEF"
     else
-        echo "Failed to remove the Nginx files; please check the logs for more details." >&2
+        echo "$RED Failed to remove the Nginx files; please check the logs for more details.$DEF" >&2
         exit 1
     fi
 fi
@@ -78,20 +78,20 @@ fi
 if [ -f "/tmp/frontend.zip" ]; then
    echo "Front End Zip file Already Present.."
 else
-    echo "Downloading the Front end Content.."
+    echo -e "$GREEN Downloading the Front end Content.."
     curl -o /tmp/frontend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-frontend-v2.zip 2>&1 | tee -a "$LOG_FILE"
-    echo "Unzipping the content"
-    unzip /tmp/frontend.zip
+    echo -e "Unzipping the content $DEF"
+    unzip /tmp/frontend.zip &>>$LOG_FILE
 fi
 
 if [ -f "/etc/nginx/default.d/expense.conf" ]; then
-   echo "Nginx conf set up Already completed.."
+   echo -e "$GREEN Nginx conf set up Already completed..$DEF"
 else
 touch /etc/nginx/default.d/expense.conf
 
 echo "proxy_http_version 1.1;
 
-location /api/ { proxy_pass http://localhost:8080/; }
+location /api/ { proxy_pass http://10.1.2.172:8080/; }
 
 location /health {
   stub_status on;
@@ -99,5 +99,5 @@ location /health {
 }" >> /etc/nginx/default.d/expense.conf
 
 fi
-echo "Restarting the Nginx Service..."
+echo -e "$GREEN Restarting the Nginx Service...$DEF"
 systemctl restart nginx
