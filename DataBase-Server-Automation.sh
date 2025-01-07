@@ -59,7 +59,7 @@ systemctl enable mysqld
 Checking_Conf Enabled
 
 ROOT_PASSWORD="ExpenseApp@1"
-mysql_secure_installation --set-root-pass "$ROOT_PASSWORD" 2>/tmp/mysql_secure_error.log
+mysql_secure_installation --set-root-pass "$ROOT_PASSWORD" &>>/tmp/mysql_secure_error.log
 
 if [ $? -eq 0 ]; then
    echo -e "$GREEN Root Password Set successfully..$DEF"
