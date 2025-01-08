@@ -37,8 +37,8 @@ else
     echo "app directory missing creating the app directory at root location"
     mkdir /app
 fi
-
-if [ -f "/tmp/backend.zip" ]; then
+ls -l /tmp | grep backend.zip
+if [ $? -ne 0 ]; then
    echo "Backend.zip file Missing. Downloading the file.."
    curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip
 else
