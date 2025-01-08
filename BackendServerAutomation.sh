@@ -3,17 +3,10 @@
 NODE_VER=$(node -v)
 DATE=$(date +%Y-%m-%d)
 if [ -d "/var/log/InstallationLogs/" ]; then
-       echo "Logs Directory exists.."
-       if [ -f "/var/log/InstallationLogs/$DATE-Install-Logs.log" ]; then
-           echo "Log File also exists.."
-       else
-           echo "Log File missing Creating Log file."
-           touch /var/log/InstallationLogs/$DATE-Install-Logs.log
-       fi       
+       echo "Logs Directory exists.."     
 else
-    echo "Creating Logs Directory and Log file"
+    echo "Creating Logs Directory"
     mkdir /var/log/InstallationLogs/
-    touch /var/log/InstallationLogs/$DATE-Install-Logs.log
 fi
 if [ "$NODE_VER" == "v20.17.0" ]; then
    echo "The Current Node JS version is v20.17.0"
