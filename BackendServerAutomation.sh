@@ -89,8 +89,16 @@ if [ "$NPM_V" == "10.8.2" ]; then
 else
    echo "Installing the npm."
    npm install
-   echo "--------------------Step-10-Complete------------------------" >> /var/log/InstallationLogs/$DATE-Install-logs.log
+   NPMV=$(npm -v)
+RED="\e[31m"
+DEF="\e[0m"
 
+if [ $? -eq 0 ] && [ "$NPMV" == "10.8.2" ]; then
+   echo "NPM Installed successfully."
+else
+   echo -e "$RED Installing NPM Failed $DEF"
+fi
+   echo "--------------------Step-10-Complete------------------------" >> /var/log/InstallationLogs/$DATE-Install-logs.log
 fi
 
 grep -q "Environment=DB_HOST" /etc/systemd/system/backend.service
