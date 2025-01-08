@@ -47,8 +47,8 @@ fi
 
 cd /app
 PRESENTW_D=$(pwd)
-if [ "$PRESENTW_D" == "/app/" ]; then
-   echo "Current working directory is /app/"
+if [ "$PRESENTW_D" == "/app" ]; then
+   echo "Current working directory is /app"
 else
    echo "Unable to change directory."
    exit 1
@@ -66,8 +66,8 @@ fi
 
 cd /app
 PRESENTW_D=$(pwd)
-if [ "$PRESENTW_D" == "/app/" ]; then
-   echo "Current working directory is /app/"
+if [ "$PRESENTW_D" == "/app" ]; then
+   echo "Current working directory is /app"
 else
    echo "Unable to change directory."
    exit 1
