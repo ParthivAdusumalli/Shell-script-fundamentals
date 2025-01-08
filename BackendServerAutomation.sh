@@ -82,7 +82,7 @@ Checking_Configuration "systemctl restart backend" "Restarting backend service f
 
 # Install MySQL and load schema
 Checking_Configuration "dnf install mysql -y" "Installing MySQL CLI failed."
-Checking_Configuration "mysql -h 54.196.22.207 -uroot -pExpenseApp@1 < /app/schema/backend.sql" "Loading schema failed."
+Checking_Configuration "mysql -h 54.196.22.207 -uroot -p ExpenseApp@1 < /app/schema/backend.sql" "Loading schema failed."
 
 # Mark installation as complete
 echo "Configuration Of Backend Service complete" >>"$LOG_FILE"
