@@ -101,9 +101,9 @@ SyslogIdentifier=backend
 WantedBy=multi-user.target' > /etc/systemd/system/backend.service
 fi
 
-systemctl daemon-reload
-systemctl start backend
-systemctl enable backend
+sudo systemctl daemon-reload
+sudo systemctl start backend
+sudo systemctl enable backend
 
 dnf list installed | grep mysql &>/dev/null
 
