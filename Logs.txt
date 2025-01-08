@@ -329,3 +329,232 @@ mysql-common.x86_64                  8.0.36-1.el9_3                             
 
 54.205.201.42 | 10.1.2.239 | t2.micro | null
 [ root@ip-10-1-2-239 /app ]#
+
+
+-------------------------------------------------------------------------------------------
+dnf module disable nodejs -y
+Error: This command has to be run with superuser privileges (under the root user                                                                                         on most systems).
+
+54.237.214.161 | 10.1.2.20 | t2.micro | null
+[ ec2-user@ip-10-1-2-20 ~ ]$ sudo su -
+
+54.237.214.161 | 10.1.2.20 | t2.micro | null
+[ root@ip-10-1-2-20 ~ ]# dnf module disable nodejs -y
+Extra Packages for Enterprise Linux 9 - x86_64   14 MB/s |  23 MB     00:01
+Extra Packages for Enterprise Linux 9 openh264  3.0 kB/s | 2.5 kB     00:00
+Red Hat Enterprise Linux 9 for x86_64 - AppStre  23 MB/s |  48 MB     00:02
+Red Hat Enterprise Linux 9 for x86_64 - BaseOS   32 MB/s |  41 MB     00:01
+Red Hat Enterprise Linux 9 Client Configuration  20 kB/s | 3.2 kB     00:00
+Dependencies resolved.
+================================================================================
+ Package           Architecture     Version             Repository         Size
+================================================================================
+Disabling modules:
+ nodejs
+
+Transaction Summary
+================================================================================
+
+Complete!
+
+54.237.214.161 | 10.1.2.20 | t2.micro | null
+[ root@ip-10-1-2-20 ~ ]# dnf module enable nodejs:20 -y
+Last metadata expiration check: 0:00:15 ago on Wed Jan  8 10:12:50 2025.
+Dependencies resolved.
+================================================================================
+ Package           Architecture     Version             Repository         Size
+================================================================================
+Enabling module streams:
+ nodejs                             20
+
+Transaction Summary
+================================================================================
+
+Complete!
+
+54.237.214.161 | 10.1.2.20 | t2.micro | null
+[ root@ip-10-1-2-20 ~ ]# dnf install nodejs -y
+Last metadata expiration check: 0:00:21 ago on Wed Jan  8 10:12:50 2025.
+Dependencies resolved.
+================================================================================
+ Package          Arch   Version               Repository                  Size
+================================================================================
+Installing:
+ nodejs           x86_64 1:20.17.0-1.module+el9.5.0+22333+c97d1c99
+                                               rhel-9-appstream-rhui-rpms  14 M
+Installing weak dependencies:
+ nodejs-docs      noarch 1:20.17.0-1.module+el9.5.0+22333+c97d1c99
+                                               rhel-9-appstream-rhui-rpms 8.4 M
+ nodejs-full-i18n x86_64 1:20.17.0-1.module+el9.5.0+22333+c97d1c99
+                                               rhel-9-appstream-rhui-rpms 8.4 M
+ npm              x86_64 1:10.8.2-1.20.17.0.1.module+el9.5.0+22333+c97d1c99
+                                               rhel-9-appstream-rhui-rpms 2.3 M
+
+Transaction Summary
+================================================================================
+Install  4 Packages
+
+Total download size: 33 M
+Installed size: 176 M
+Downloading Packages:
+(1/4): nodejs-docs-20.17.0-1.module+el9.5.0+223  21 MB/s | 8.4 MB     00:00
+(2/4): nodejs-full-i18n-20.17.0-1.module+el9.5.  15 MB/s | 8.4 MB     00:00
+(3/4): npm-10.8.2-1.20.17.0.1.module+el9.5.0+22 9.8 MB/s | 2.3 MB     00:00
+(4/4): nodejs-20.17.0-1.module+el9.5.0+22333+c9  13 MB/s |  14 MB     00:01
+--------------------------------------------------------------------------------
+Total                                            30 MB/s |  33 MB     00:01
+Running transaction check
+Transaction check succeeded.
+Running transaction test
+Transaction test succeeded.
+Running transaction
+  Preparing        :                                                        1/1
+  Installing       : nodejs-docs-1:20.17.0-1.module+el9.5.0+22333+c97d1c9   1/4
+  Installing       : nodejs-full-i18n-1:20.17.0-1.module+el9.5.0+22333+c9   2/4
+  Installing       : npm-1:10.8.2-1.20.17.0.1.module+el9.5.0+22333+c97d1c   3/4
+  Installing       : nodejs-1:20.17.0-1.module+el9.5.0+22333+c97d1c99.x86   4/4
+  Running scriptlet: nodejs-1:20.17.0-1.module+el9.5.0+22333+c97d1c99.x86   4/4
+  Verifying        : nodejs-1:20.17.0-1.module+el9.5.0+22333+c97d1c99.x86   1/4
+  Verifying        : nodejs-docs-1:20.17.0-1.module+el9.5.0+22333+c97d1c9   2/4
+  Verifying        : nodejs-full-i18n-1:20.17.0-1.module+el9.5.0+22333+c9   3/4
+  Verifying        : npm-1:10.8.2-1.20.17.0.1.module+el9.5.0+22333+c97d1c   4/4
+
+Installed:
+  nodejs-1:20.17.0-1.module+el9.5.0+22333+c97d1c99.x86_64
+  nodejs-docs-1:20.17.0-1.module+el9.5.0+22333+c97d1c99.noarch
+  nodejs-full-i18n-1:20.17.0-1.module+el9.5.0+22333+c97d1c99.x86_64
+  npm-1:10.8.2-1.20.17.0.1.module+el9.5.0+22333+c97d1c99.x86_64
+
+Complete!
+
+54.237.214.161 | 10.1.2.20 | t2.micro | null
+[ root@ip-10-1-2-20 ~ ]# useradd expense
+
+54.237.214.161 | 10.1.2.20 | t2.micro | null
+[ root@ip-10-1-2-20 ~ ]# mkdir /app
+
+54.237.214.161 | 10.1.2.20 | t2.micro | null
+[ root@ip-10-1-2-20 ~ ]# curl -o /tmp/backend.zip https://expense-builds.s3.us-e                                                                                        ast-1.amazonaws.com/expense-backend-v2.zip
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  3162  100  3162    0     0  17764      0 --:--:-- --:--:-- --:--:-- 17764
+
+54.237.214.161 | 10.1.2.20 | t2.micro | null
+[ root@ip-10-1-2-20 ~ ]# curl -o /tmp/backend.zip https://expense-builds.s3.us-e                                                                                        ast-1.amazonaws.com/expense-backend-v2.zip
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  3162  100  3162    0     0  25095      0 --:--:-- --:--:-- --:--:-- 25296
+
+54.237.214.161 | 10.1.2.20 | t2.micro | null
+[ root@ip-10-1-2-20 ~ ]# cd /app
+
+54.237.214.161 | 10.1.2.20 | t2.micro | null
+[ root@ip-10-1-2-20 /app ]# unzip /tmp/backend.zip
+Archive:  /tmp/backend.zip
+  inflating: DbConfig.js
+  inflating: TransactionService.js
+  inflating: index.js
+  inflating: package.json
+   creating: schema/
+  inflating: schema/backend.sql
+
+54.237.214.161 | 10.1.2.20 | t2.micro | null
+[ root@ip-10-1-2-20 /app ]# cd /app
+
+54.237.214.161 | 10.1.2.20 | t2.micro | null
+[ root@ip-10-1-2-20 /app ]# npm install
+
+added 88 packages, and audited 89 packages in 5s
+
+15 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.0.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.0.0
+npm notice To update run: npm install -g npm@11.0.0
+npm notice
+
+54.237.214.161 | 10.1.2.20 | t2.micro | null
+[ root@ip-10-1-2-20 /app ]# vim /etc/systemd/system/backend.service
+
+54.237.214.161 | 10.1.2.20 | t2.micro | null
+[ root@ip-10-1-2-20 /app ]# systemctl daemon-reload
+
+54.237.214.161 | 10.1.2.20 | t2.micro | null
+[ root@ip-10-1-2-20 /app ]# systemctl start backend
+
+54.237.214.161 | 10.1.2.20 | t2.micro | null
+[ root@ip-10-1-2-20 /app ]# systemctl enable backend
+Created symlink /etc/systemd/system/multi-user.target.wants/backend.service → /e                                                                                        tc/systemd/system/backend.service.
+
+54.237.214.161 | 10.1.2.20 | t2.micro | null
+[ root@ip-10-1-2-20 /app ]# dnf install mysql -y
+Last metadata expiration check: 0:02:51 ago on Wed Jan  8 10:12:50 2025.
+Dependencies resolved.
+================================================================================
+ Package                 Arch   Version        Repository                  Size
+================================================================================
+Installing:
+ mysql                   x86_64 8.0.36-1.el9_3 rhel-9-appstream-rhui-rpms 2.7 M
+Installing dependencies:
+ mariadb-connector-c-config
+                         noarch 3.2.6-1.el9_0  rhel-9-appstream-rhui-rpms  11 k
+ mysql-common            x86_64 8.0.36-1.el9_3 rhel-9-appstream-rhui-rpms  78 k
+
+Transaction Summary
+================================================================================
+Install  3 Packages
+
+Total download size: 2.8 M
+Installed size: 60 M
+Downloading Packages:
+(1/3): mariadb-connector-c-config-3.2.6-1.el9_0 174 kB/s |  11 kB     00:00
+(2/3): mysql-common-8.0.36-1.el9_3.x86_64.rpm   1.0 MB/s |  78 kB     00:00
+(3/3): mysql-8.0.36-1.el9_3.x86_64.rpm           21 MB/s | 2.7 MB     00:00
+--------------------------------------------------------------------------------
+Total                                            16 MB/s | 2.8 MB     00:00
+Running transaction check
+Transaction check succeeded.
+Running transaction test
+Transaction test succeeded.
+Running transaction
+  Preparing        :                                                        1/1
+  Installing       : mariadb-connector-c-config-3.2.6-1.el9_0.noarch        1/3
+  Installing       : mysql-common-8.0.36-1.el9_3.x86_64                     2/3
+  Installing       : mysql-8.0.36-1.el9_3.x86_64                            3/3
+  Running scriptlet: mysql-8.0.36-1.el9_3.x86_64                            3/3
+  Verifying        : mariadb-connector-c-config-3.2.6-1.el9_0.noarch        1/3
+  Verifying        : mysql-8.0.36-1.el9_3.x86_64                            2/3
+  Verifying        : mysql-common-8.0.36-1.el9_3.x86_64                     3/3
+
+Installed:
+  mariadb-connector-c-config-3.2.6-1.el9_0.noarch  mysql-8.0.36-1.el9_3.x86_64
+  mysql-common-8.0.36-1.el9_3.x86_64
+
+Complete!
+
+54.237.214.161 | 10.1.2.20 | t2.micro | null
+[ root@ip-10-1-2-20 /app ]# mysql -h 10.1.2.63 -uroot -pExpenseApp@1 < /app/sche                                                                                        ma/backend.sql
+mysql: [Warning] Using a password on the command line interface can be insecure.
+
+54.237.214.161 | 10.1.2.20 | t2.micro | null
+[ root@ip-10-1-2-20 /app ]# systemctl restart backend
+
+54.237.214.161 | 10.1.2.20 | t2.micro | null
+[ root@ip-10-1-2-20 /app ]# systemctl status backend
+● backend.service - Backend Service
+     Loaded: loaded (/etc/systemd/system/backend.service; enabled; preset: disab                                                                                        led)
+     Active: active (running) since Wed 2025-01-08 10:16:10 UTC; 11s ago
+   Main PID: 2229 (node)
+      Tasks: 7 (limit: 4300)
+     Memory: 20.6M
+        CPU: 325ms
+     CGroup: /system.slice/backend.service
+             └─2229 /bin/node /app/index.js
+
+Jan 08 10:16:10 ip-10-1-2-20.ec2.internal systemd[1]: Started Backend Service.
+Jan 08 10:16:10 ip-10-1-2-20.ec2.internal snoopy[2229]: [uid:1002 sid:2229 tt…js
+Jan 08 10:16:10 ip-10-1-2-20.ec2.internal backend[2229]: { "timestamp" : 1736… }
+Hint: Some lines were ellipsized, use -l to show in full.

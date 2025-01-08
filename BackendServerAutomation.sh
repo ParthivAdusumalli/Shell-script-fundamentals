@@ -93,7 +93,7 @@ Description = Backend Service
 
 [Service]
 User=expense
-Environment=DB_HOST="10.1.2.63"
+Environment=DB_HOST="10.1.2.5"
 ExecStart=/bin/node /app/index.js
 SyslogIdentifier=backend
 
@@ -101,9 +101,9 @@ SyslogIdentifier=backend
 WantedBy=multi-user.target' > /etc/systemd/system/backend.service
 fi
 
-sudo systemctl daemon-reload
-sudo systemctl start backend
-sudo systemctl enable backend
+systemctl daemon-reload
+systemctl start backend
+systemctl enable backend
 
 dnf list installed | grep mysql &>/dev/null
 
@@ -113,6 +113,6 @@ else
     echo "Mysql client not installed installing Now.."
     dnf install mysql -y &>>/var/log/InstallationLogs/$DATE-Install-logs.log
 fi
-mysql -h 10.1.2.63 -uroot -pExpenseApp@1 < /app/schema/backend.sql
+mysql -h 10.1.2.5 -uroot -pExpenseApp@1 < /app/schema/backend.sql
 
 systemctl restart backend
