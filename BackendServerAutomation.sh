@@ -1,88 +1,125 @@
 #!/bin/bash
 
-# Initialize variables
+NODE_VER=$(node -v)
 DATE=$(date +%Y-%m-%d)
-LOG_FILE="/var/log/InstallLogs/${DATE}-Installation.log"
-TARGET="/app"
-
-# Check for root privileges
-if [ $(id -u) -ne 0 ]; then
-    echo "Run the script with root privileges."
-    exit 1
-fi
-
-# Ensure log directory exists
-mkdir -p /var/log/InstallLogs/
-
-# Function to check command success
-Checking_Configuration() {
-    $1 &>>"$LOG_FILE"
-    if [ $? -ne 0 ]; then
-        echo "$2"
-        exit 1
-    fi
-}
-
-# Ensure script runs only once
-if grep -q "Configuration Of Backend Service complete" "$LOG_FILE" &>/dev/null; then
-    echo "Backend Service Configuration completed already."
-    exit 1
-fi
-
-# Disable and enable Node.js module
-echo "Configuring the backend service with Node.js v20..."
-Checking_Configuration "dnf module disable nodejs -y" "Disabling Node.js v16 failed. Check logs."
-Checking_Configuration "dnf module enable nodejs:20 -y" "Enabling Node.js v20 failed. Check logs."
-
-# Install Node.js
-Checking_Configuration "dnf install nodejs -y" "Installing Node.js v20 failed."
-
-# Create user if not exists
-id -u expense &>/dev/null || useradd expense
-
-# Ensure application directory exists
-mkdir -p "$TARGET"
-
-# Download and extract backend application
-if [ ! -f "/tmp/backend.zip" ]; then
-    curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip &>>"$LOG_FILE"
-fi
-cd "$TARGET" || { echo "Failed to change directory to $TARGET"; exit 1; }
-unzip -o /tmp/backend.zip &>>"$LOG_FILE"
-
-# Install dependencies
-if [ "$PWD" == "$TARGET" ]; then
-    Checking_Configuration "npm install" "Installing npm dependencies failed."
+if [ -d "/var/log/InstallationLogs/" ]; then
+       echo "Logs Directory exists.."
+       if [ -f "/var/log/InstallationLogs/$DATE-Install-Logs.log" ]; then
+           echo "Log File also exists.."
+       else
+           echo "Log File missing Creating Log file."
+           touch /var/log/InstallationLogs/$DATE-Install-Logs.log
+       fi       
 else
-    echo "Current directory is not $TARGET. Terminating."
-    exit 1
+    echo "Creating Logs Directory and Log file"
+    mkdir /var/log/InstallationLogs/
+    touch /var/log/InstallationLogs/$DATE-Install-Logs.log
+fi
+if [ "$NODE_VER" == "v20.17.0" ]; then
+   echo "The Current Node JS version is v20.17.0"
+else
+    
+    dnf module disable nodejs -y &> /var/log/InstallationLogs/$DATE-Install-logs.log
+    dnf module enable nodejs:20 -y &>> /var/log/InstallationLogs/$DATE-Install-logs.log
+    dnf install nodejs -y &>> /var/log/InstallationLogs/$DATE-Install-logs.log
 fi
 
-# Create and configure systemd service
-if [ ! -f "/etc/systemd/system/backend.service" ]; then
-    cat <<EOL > /etc/systemd/system/backend.service
-[Unit]
-Description=Backend Service
+if id "expense" &>/dev/null; then
+    echo "User 'expense' already exists."
+else
+    echo "User 'expense' does not exist. Creating the user..."
+    useradd -m expense 2>>/var/log/InstallationLogs/$DATE-Install-logs.log
+    if [ $? -eq 0 ]; then
+        echo "User 'expense' created successfully."
+    else
+        echo "Failed to create user 'expense'. Please check permissions and logs"
+    fi
+fi
+
+ls -l / | grep app
+
+if [ $? -eq 0 ]; then
+   echo "The Directory app was present at root location(/)"
+else
+    echo "app directory missing creating the app directory at root location"
+    mkdir /app
+fi
+
+if [ -f "/tmp/backend.zip" ]; then
+   echo "Backend.zip file Missing. Downloading the file.."
+   curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip
+else
+    echo "Application Code Zip file present at /tmp/backend.zip"
+fi
+
+cd /app
+PRESENTW_D=$(pwd)
+if [ "$PRESENTW_D" == "/app/" ]; then
+   echo "Current working directory is /app/"
+else
+   echo "Unable to change directory."
+   exit 1
+fi
+
+echo "Trying to Unzip the File content"
+
+cat /var/log/InstallationLogs/$DATE-Install-logs.log | grep "Archive:  /tmp/backend.zip"
+
+if [ $? -eq 0 ]; then
+   echo "Already Unzipping Finished..Cant unzip again.."
+else 
+    unzip /tmp/backend.zip
+fi
+
+cd /app
+PRESENTW_D=$(pwd)
+if [ "$PRESENTW_D" == "/app/" ]; then
+   echo "Current working directory is /app/"
+else
+   echo "Unable to change directory."
+   exit 1
+fi
+
+NPM_V=$(npm -v)
+
+if [ "$NPM_V" == "10.8.2" ]; then
+   echo "node package manager already installed.."
+else
+   echo "Installing the npm."
+   npm install
+fi
+
+grep -q "Environment=DB_HOST" /etc/systemd/system/backend.service
+
+if [ $? -eq 0 ]; then
+   echo "backend service file already configured..Please check if required"
+   cat /etc/systemd/system/backend.service
+else
+    echo '[Unit]
+Description = Backend Service
 
 [Service]
 User=expense
-Environment=DB_HOST="54.196.22.207"
+Environment=DB_HOST="10.1.2.63"
 ExecStart=/bin/node /app/index.js
 SyslogIdentifier=backend
 
 [Install]
-WantedBy=multi-user.target
-EOL
+WantedBy=multi-user.target' > /etc/systemd/system/backend.service
 fi
 
-# Reload systemd, enable and restart the service
-Checking_Configuration "systemctl daemon-reload" "Reloading systemd daemon failed."
-Checking_Configuration "systemctl enable backend" "Enabling backend service failed."
-Checking_Configuration "systemctl restart backend" "Restarting backend service failed."
+systemctl daemon-reload
+systemctl start backend
+systemctl enable backend
 
-# Install MySQL and load schema
-Checking_Configuration "dnf install mysql -y" "Installing MySQL CLI failed."
-Checking_Configuration "mysql -h 54.196.22.207 -uroot -p ExpenseApp@1 < /app/schema/backend.sql" "Loading schema failed."
+dnf list installed | grep mysql &>/dev/null
 
-# Mark installation as complete
-echo "Configuration Of Backend Service complete" >>"$LOG_FILE"
+if [ $? -eq 0 ]; then
+    echo "Mysql Command line client already installed.."
+else
+    echo "Mysql client not installed installing Now.."
+    dnf install mysql -y &>>/var/log/InstallationLogs/$DATE-Install-logs.log
+fi
+mysql -h 10.1.2.63 -uroot -pExpenseApp@1 < /app/schema/backend.sql
+
+systemctl restart backend
