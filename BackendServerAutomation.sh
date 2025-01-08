@@ -146,5 +146,8 @@ else
     echo "Error: Failed to restart backend service." >> $LOG_FILE
     exit 1
 fi
-
+echo "Also Installing the Other dependencies.."
+npm install mysql2
+systemctl daemon-reload
+systemctl restart backend
 echo "Script completed successfully. Check $LOG_FILE for details."
