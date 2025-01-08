@@ -16,7 +16,7 @@ DATE=$(date +%Y%m%d)
 if [ -d "/var/log/InstallLogs/" ]; then
     echo -e "$GREEN Directory /var/log/InstallLogs/ exists.$DEF"
 else
-    echo "$YELLOW Directory does not exist. Creating Now..$DEF"
+    echo -e "$YELLOW Directory does not exist. Creating Now..$DEF"
     mkdir /var/log/InstallLogs/
 fi
 
