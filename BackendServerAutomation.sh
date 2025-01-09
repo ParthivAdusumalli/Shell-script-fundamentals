@@ -111,7 +111,7 @@ Description = Backend Service
 
 [Service]
 User=expense
-Environment=DB_HOST="10.1.2.124"
+Environment=DB_HOST="10.1.2.211"
 ExecStart=/bin/node /app/index.js
 SyslogIdentifier=backend
 
@@ -134,7 +134,7 @@ grep "Configuring Schema Completed" $DATE-Install-logs.log
 if [ $? -eq 0 ]; then
    echo -e "$YELLOW DB Schema Already configured..$DEF"
 else
-    mysql -h 10.1.2.124 -uroot -pExpenseApp@1 < /app/schema/backend.sql
+    mysql -h 10.1.2.211 -uroot -pExpenseApp@1 < /app/schema/backend.sql
     echo -e "$GREEN Configuring Schema Completed $DEF" >> $DATE-Install-logs.log
 fi
 systemctl restart backend
