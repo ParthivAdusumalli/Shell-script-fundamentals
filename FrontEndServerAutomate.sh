@@ -81,7 +81,13 @@ else
     echo -e "$GREEN Downloading the Front end Content.."
     curl -o /tmp/frontend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-frontend-v2.zip 2>&1 | tee -a "$LOG_FILE"
     echo -e "Unzipping the content $DEF"
-    unzip /tmp/frontend.zip &>>$LOG_FILE
+    cp /tmp/frontend.zip /usr/share/nginx/html
+    if [ $? -eq 0 ]; then
+       echo "Copied Zip file successfully"
+    else 
+        echo "Copying files failed.."
+    fi
+    unzip /tmp/frontend.zip
 fi
 
 if [ -f "/etc/nginx/default.d/expense.conf" ]; then
@@ -91,13 +97,21 @@ touch /etc/nginx/default.d/expense.conf
 
 echo "proxy_http_version 1.1;
 
-location /api/ { proxy_pass http://10.1.2.172:8080/; }
+location /api/ { proxy_pass http://10.1.2.190:8080/; }
 
 location /health {
   stub_status on;
   access_log off;
 }" >> /etc/nginx/default.d/expense.conf
 
+fi
+cd /usr/share/nginx/html
+PRE_WD=$(pwd)
+if [ "$PRE_WD" == "/usr/share/nginx/html" ]; then
+   echo "Present working directory is /usr/share/nginx/html"
+   unzip /usr/share/nginx/html/frontend.zip
+else 
+    echo "Changing directory failed.."
 fi
 echo -e "$GREEN Restarting the Nginx Service...$DEF"
 systemctl restart nginx
