@@ -138,13 +138,8 @@ else
     echo -e "$GREEN Configuring Schema Completed $DEF" >> $DATE-Install-logs.log
 fi
 systemctl restart backend
-systemctl status backend | grep "failed"
-if [ $? -eq 0 ];then
-   echo -e "$RED Backend Service Failed to run.. Installing Other dependencies..$DEF"
+echo -e "$GREEN Adding Other dependencies...$DEF"
    npm install mysql2
-   else
-       echo -e "$GREEN Backend Service is up and running $DEF"
-fi
 systemctl status backend | grep "active (running)"
 if [ $? -eq 0 ];then
    echo -e "$GREEN Backend Service up and running..$DEF"
