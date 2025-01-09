@@ -1,153 +1,157 @@
 #!/bin/bash
+RED="\e[31m"
+GREEN="\e[32m"
+YELLOW="\e[33m"
+DEF="\e[0m"
 
-# Variables
 NODE_VER=$(node -v)
 DATE=$(date +%Y-%m-%d)
-LOG_DIR="/var/log/InstallationLogs"
-LOG_FILE="$LOG_DIR/$DATE-Install-logs.log"
-APP_DIR="/app"
-BACKEND_ZIP="/tmp/backend.zip"
-BACKEND_URL="https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip"
-BACKEND_SERVICE="/etc/systemd/system/backend.service"
-DB_HOST="10.1.2.22"
-DB_USER="root"
-DB_PASS="ExpenseApp@1"
-DB_SCHEMA="/app/schema/backend.sql"
-
-# Ensure Logs Directory Exists
-mkdir -p $LOG_DIR
-
-echo "Checking Node.js version..."
-if [ "$NODE_VER" == "v20.17.0" ]; then
-    echo "The Current Node.js version is v20.17.0"
+if [ -d "/var/log/InstallationLogs/" ]; then
+       echo -e "$YELLOW Logs Directory exists..$DEF"     
 else
-    echo "Updating Node.js to version 20..."
-    dnf module disable nodejs -y &> $LOG_FILE
-    echo "Step 1 Complete: Disabled Node.js module" >> $LOG_FILE
-    dnf module enable nodejs:20 -y &>> $LOG_FILE
-    echo "Step 2 Complete: Enabled Node.js module" >> $LOG_FILE
-    dnf install nodejs -y &>> $LOG_FILE
-    echo "Step 3 Complete: Installed Node.js" >> $LOG_FILE
+    echo -e "$GREEN Creating Logs Directory $DEF"
+    mkdir /var/log/InstallationLogs/
+fi
+if [ "$NODE_VER" == "v20.17.0" ]; then
+   echo -e "$YELLOW The Current Node JS version is v20.17.0 $DEF"
+else 
+    echo -e "$GREEN Configuring the Node JS v20.17.0 $DEF"
+    dnf module disable nodejs -y &> /var/log/InstallationLogs/$DATE-Install-logs.log
+    dnf module enable nodejs:20 -y &>> /var/log/InstallationLogs/$DATE-Install-logs.log
+    dnf install nodejs -y &>> /var/log/InstallationLogs/$DATE-Install-logs.log
+    NODE_VER_RECHECK=$(node -v)
+    if [ "$NODE_VER_RECHECK" == "v20.17.0" ]; then
+       echo -e "$GREEN Successfully configured the nodejs v20 $DEF"
+    else 
+        echo -e "$RED Configuring Node JS v20 Failed..Check logs $DEF"
+        exit 1
+   fi
 fi
 
-# Check and Create User
 if id "expense" &>/dev/null; then
-    echo "User 'expense' already exists."
+    echo -e "$YELLOW User 'expense' already exists.$DEF "
 else
-    echo "Creating user 'expense'..."
-    useradd -m expense 2>>$LOG_FILE
+    echo "$YELLOW User 'expense' does not exist. Creating the user...$DEF"
+    useradd -m expense 2>>/var/log/InstallationLogs/$DATE-Install-logs.log
     if [ $? -eq 0 ]; then
-        echo "User 'expense' created successfully."
-        echo "Step 4 Complete: Created user 'expense'" >> $LOG_FILE
+        echo -e "$GREEN User 'expense' created successfully.$DEF"
     else
-        echo "Error: Failed to create user 'expense'." >> $LOG_FILE
+        echo -e "$RED Failed to create user 'expense'. Please check permissions and logs $DEF"
         exit 1
     fi
 fi
 
-# Check and Create App Directory
-if [ -d "$APP_DIR" ]; then
-    echo "The Directory $APP_DIR already exists."
+ls -l / | grep app
+
+if [ $? -eq 0 ]; then
+   echo -e "$YELLOW The Directory app was present at root location(/) $DEF"
 else
-    echo "Creating directory $APP_DIR..."
-    mkdir $APP_DIR
-    echo "Step 5 Complete: Created directory $APP_DIR" >> $LOG_FILE
+    echo -e "$YELLOW app directory missing creating the app directory at root location $DEF"
+    mkdir /app
+    ls -l / | grep app
+    if [ $? -eq 0 ]; then
+       echo -e "$GREEN Directory /app successfully created $DEF"
+   else
+       echo -e "$RED app directory cant be created..ERROR $DEF"
+      fi
+fi
+ls -l /tmp | grep backend.zip
+if [ $? -ne 0 ]; then
+   echo -e "$YELLOW Backend.zip file Missing. Downloading the file..$DEF"
+   curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip
+else
+    echo -e "$YELLOW Application Code Zip file present at /tmp/backend.zip $DEF"
 fi
 
-# Check and Download Backend Zip
-if [ ! -f "$BACKEND_ZIP" ]; then
-    echo "Downloading backend zip file..."
-    curl -o $BACKEND_ZIP $BACKEND_URL
-    echo "Step 6 Complete: Downloaded backend zip file" >> $LOG_FILE
+cd /app
+PRESENTW_D=$(pwd)
+if [ "$PRESENTW_D" == "/app" ]; then
+   echo -e "$GREEN Current working directory is /app $DEF"
 else
-    echo "Backend zip file already exists at $BACKEND_ZIP."
+   echo -e "$RED Unable to change directory.$DEF"
+   exit 1
 fi
 
-# Change to App Directory
-cd $APP_DIR || { echo "Error: Unable to change directory to $APP_DIR."; exit 1; }
-echo "Step 7 Complete: Changed directory to $APP_DIR" >> $LOG_FILE
+echo -e "$YELLOW Trying to Unzip the File content $DEF"
 
-# Unzip Backend Code
-if grep -q "Archive:  $BACKEND_ZIP" $LOG_FILE; then
-    echo "Backend zip already unzipped. Skipping..."
-else
-    echo "Unzipping backend zip..."
-    unzip $BACKEND_ZIP &>> $LOG_FILE
-    echo "Step 8 Complete: Unzipped backend code" >> $LOG_FILE
+cat /var/log/InstallationLogs/$DATE-Install-logs.log | grep "Archive:  /tmp/backend.zip"
+
+if [ $? -eq 0 ]; then
+   echo -e "$YELLOW Already Unzipping Finished..Cant unzip again..$DEF"
+else 
+    unzip /tmp/backend.zip
 fi
 
-# Check NPM Version
+cd /app
+PRESENTW_D=$(pwd)
+if [ "$PRESENTW_D" == "/app" ]; then
+   echo -e "$GREEN Current working directory is /app $DEF"
+else
+   echo -e "$RED Unable to change directory. $DEF"
+   exit 1
+fi
+
 NPM_V=$(npm -v)
+
 if [ "$NPM_V" == "10.8.2" ]; then
-    echo "NPM is already at version 10.8.2."
+   echo -e "$YELLOW node package manager already installed..$DEF"
 else
-    echo "Installing NPM dependencies..."
-    npm install &>> $LOG_FILE
-    echo "Step 9 Complete: Installed NPM dependencies" >> $LOG_FILE
+   echo -e "$GREEN Installing the npm.$DEF"
+   npm install
 fi
 
-# Configure Backend Service
-if grep -q "Environment=DB_HOST" $BACKEND_SERVICE; then
-    echo "Backend service already configured."
+grep -q "Environment=DB_HOST" /etc/systemd/system/backend.service
+
+if [ $? -eq 0 ]; then
+   echo "$YELLOW backend service file already configured..Please check if required$DEF"
+   cat /etc/systemd/system/backend.service
 else
-    echo "Configuring backend service..."
-    cat <<EOF > $BACKEND_SERVICE
-[Unit]
-Description=Backend Service
+    echo '[Unit]
+Description = Backend Service
 
 [Service]
 User=expense
-Environment=DB_HOST="$DB_HOST"
-ExecStart=/bin/node $APP_DIR/index.js
+Environment=DB_HOST="10.1.2.124"
+ExecStart=/bin/node /app/index.js
 SyslogIdentifier=backend
 
 [Install]
-WantedBy=multi-user.target
-EOF
-    echo "Step 10 Complete: Configured backend service" >> $LOG_FILE
+WantedBy=multi-user.target' > /etc/systemd/system/backend.service
 fi
 
-# Reload and Start Backend Service
 systemctl daemon-reload
 systemctl start backend
 systemctl enable backend
-
-if [ $? -eq 0 ]; then
-    echo "Step 11 Complete: Backend service started and enabled" >> $LOG_FILE
-else
-    echo "Error: Failed to start backend service." >> $LOG_FILE
-    exit 1
-fi
-
-# Check and Install MySQL Client
 dnf list installed | grep mysql &>/dev/null
-if [ $? -eq 0 ]; then
-    echo "MySQL client already installed."
-else
-    echo "Installing MySQL client..."
-    dnf install mysql -y &>> $LOG_FILE
-    echo "Step 12 Complete: Installed MySQL client" >> $LOG_FILE
-fi
 
-# Import Database Schema
-mysql -h $DB_HOST -u$DB_USER -p$DB_PASS < $DB_SCHEMA
 if [ $? -eq 0 ]; then
-    echo "Step 13 Complete: Imported database schema" >> $LOG_FILE
+    echo -e "$YELLOW Mysql Command line client already installed..$DEF"
 else
-    echo "Error: Failed to import database schema." >> $LOG_FILE
-    exit 1
+    echo -e "$YELLOW Mysql client not installed installing Now..$DEF"
+    dnf install mysql -y &>>/var/log/InstallationLogs/$DATE-Install-logs.log
 fi
-
-# Restart Backend Service
+grep "Configuring Schema Completed" $DATE-Install-logs.log
+if [ $? -eq 0 ]; then
+   echo -e "$YELLOW DB Schema Already configured..$DEF"
+else
+    mysql -h 10.1.2.124 -uroot -pExpenseApp@1 < /app/schema/backend.sql
+    echo -e "$GREEN Configuring Schema Completed $DEF" >> $DATE-Install-logs.log
+fi
 systemctl restart backend
-if [ $? -eq 0 ]; then
-    echo "Step 14 Complete: Restarted backend service" >> $LOG_FILE
-else
-    echo "Error: Failed to restart backend service." >> $LOG_FILE
-    exit 1
+systemctl status backend | grep "failed"
+if [ $? -eq 0 ];then
+   echo -e "$RED Backend Service Failed to run.. Installing Other dependencies..$DEF"
+   npm install mysql2
+   else
+       echo -e "$GREEN Backend Service is up and running $DEF"
 fi
-echo "Also Installing the Other dependencies.."
-npm install mysql2
+systemctl status backend | grep "active (running)"
+if [ $? -eq 0 ];then
+   echo -e "$GREEN Backend Service up and running..$DEF"
+   else
+       echo -e "$RED Backend Service Still failing $DEF"
+       exit 1
+fi
 systemctl daemon-reload
 systemctl restart backend
-echo "Script completed successfully. Check $LOG_FILE for details."
+echo -e "$GREEN Script completed successfully. Check $LOG_FILE for details.$DEF"

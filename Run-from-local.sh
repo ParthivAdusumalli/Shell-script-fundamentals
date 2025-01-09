@@ -1,0 +1,10 @@
+#!/bin/bash
+DB_SERVER_IP="54.92.190.27"
+BACKEND_SERVER_IP="54.87.9.150"
+FRONTEND_IP="54.224.46.77"
+echo "Configuring DB Server..."
+plink -ssh -pw DevOps321 ec2-user@$DB_SERVER_IP "git clone 'https://github.com/ParthivAdusumalli/Shell-script-fundamentals' && sudo bash /home/ec2-user/Shell-script-fundamentals/DataBase-Server-Automation.sh"
+echo "Configuring the Backend Server..."
+plink -ssh -pw DevOps321 ec2-user@$BACKEND_SERVER_IP "git clone 'https://github.com/ParthivAdusumalli/Shell-script-fundamentals' && sudo bash /home/ec2-user/Shell-script-fundamentals/BackendServerAutomation.sh"
+echo "Configuring Web Server..."
+plink -ssh -pw DevOps321 ec2-user@$FRONTEND_IP "git clone 'https://github.com/ParthivAdusumalli/Shell-script-fundamentals' && sudo bash /home/ec2-user/Shell-script-fundamentals/FrontEndServerAutomate.sh"

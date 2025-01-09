@@ -97,7 +97,7 @@ touch /etc/nginx/default.d/expense.conf
 
 echo "proxy_http_version 1.1;
 
-location /api/ { proxy_pass http://10.1.2.190:8080/; }
+location /api/ { proxy_pass http://10.1.2.202:8080/; }
 
 location /health {
   stub_status on;
@@ -113,5 +113,5 @@ if [ "$PRE_WD" == "/usr/share/nginx/html" ]; then
 else 
     echo "Changing directory failed.."
 fi
-echo -e "$GREEN Restarting the Nginx Service...$DEF"
 systemctl restart nginx
+echo -e "$GREEN Restarted the Nginx Service...$DEF"
