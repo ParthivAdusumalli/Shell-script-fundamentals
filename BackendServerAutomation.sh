@@ -56,9 +56,10 @@ fi
 rm -rf /app &>>/var/log/InstallationLogs/$DATE-Install-logs.log
 if [ $? -eq 0 ]; then
    echo "Removed the already existing /app Directory... "
+   mkdir /app
 else
    echo "Directory Not exist.Creating Now"
-   sudo mkdir /app
+   mkdir /app
 fi
 ls -l / | grep app
 if [ $? -eq 0 ]; then
