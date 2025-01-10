@@ -114,7 +114,7 @@ location /health {
 else
     echo "Configuring the expense.conf file"
     echo "proxy_http_version 1.1;
-location /api/ { proxy_pass http://10.1.2.237:8080/; }
+location /api/ { proxy_pass http://10.1.2.83:8080/; }
 location /health {
   stub_status on;
   access_log off;
