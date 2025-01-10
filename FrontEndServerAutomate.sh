@@ -97,8 +97,13 @@ else
    exit 1
 fi
 if  test -f "/etc/nginx/default.d/expense.conf"; then
-    echo -e "$GREEN Nginx conf set up Already completed..Please check the configuration below$DEF"
-    cat /etc/nginx/default.d/expense.conf
+    echo -e "$GREEN Reconfiguring the expense.conf $DEF"
+    echo "proxy_http_version 1.1;
+location /api/ { proxy_pass http://10.1.2.80:8080/; }
+location /health {
+  stub_status on;
+  access_log off;
+}" > /etc/nginx/default.d/expense.conf
 else
     echo "Configuring the expense.conf file"
     touch /etc/nginx/default.d/expense.conf

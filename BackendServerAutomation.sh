@@ -27,7 +27,18 @@ if [ "$(node -v)" == "v20.17.0" ]; then
       fi
    else 
        echo "Skipping the Node.JS Installation."
-    fi
+       fi
+else 
+    echo "Installing Node JS now.."
+    dnf module disable nodejs -y &> /var/log/InstallationLogs/$DATE-Install-logs.log
+      dnf module enable nodejs:20 -y &>> /var/log/InstallationLogs/$DATE-Install-logs.log
+      dnf install nodejs -y &>> /var/log/InstallationLogs/$DATE-Install-logs.log
+      if [ "$(node -v)" == "v20.17.0" ]; then
+       echo -e "$GREEN Successfully configured the nodejs v20 $DEF"
+      else 
+        echo -e "$RED Configuring Node JS v20 Failed..Check logs $DEF"
+        exit 1
+      fi
 fi
 
 if id "expense" &>/dev/null; then
@@ -47,7 +58,7 @@ if [ $? -eq 0 ]; then
    echo "Removed the already existing /app Directory... "
 else
    echo "Directory Not exist.Creating Now"
-   mkdir /app
+   sudo mkdir /app
 fi
 ls -l / | grep app
 if [ $? -eq 0 ]; then
@@ -129,12 +140,12 @@ else
     echo -e "$YELLOW Mysql client not installed installing Now..$DEF"
     dnf install mysql -y &>>/var/log/InstallationLogs/$DATE-Install-logs.log
 fi
-grep "Configuring Schema Completed" $DATE-Install-logs.log
+grep "Configuring Schema Completed" /var/log/InstallationLogs/$DATE-Install-logs.log
 if [ $? -eq 0 ]; then
    echo -e "$YELLOW DB Schema Already configured..$DEF"
 else
     mysql -h 10.1.2.242 -uroot -pExpenseApp@1 < /app/schema/backend.sql
-    echo -e "$GREEN Configuring Schema Completed $DEF" >> $DATE-Install-logs.log
+    echo -e "$GREEN Configuring Schema Completed $DEF" >> /var/log/InstallationLogs/$DATE-Install-logs.log
 fi
 systemctl restart backend
 #echo -e "$GREEN Adding Other dependencies...$DEF"
