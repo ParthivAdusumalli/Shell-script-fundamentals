@@ -115,7 +115,7 @@ Description = Backend Service
 
 [Service]
 User=expense
-Environment=DB_HOST="10.1.2.81"
+Environment=DB_HOST="10.1.2.155"
 ExecStart=/bin/node /app/index.js
 SyslogIdentifier=backend
 
@@ -145,18 +145,18 @@ grep "Configuring Schema Completed" /var/log/InstallationLogs/$DATE-Install-logs
 if [ $? -eq 0 ]; then
    echo -e "$YELLOW DB Schema Already configured..$DEF"
 else
-    mysql -h 10.1.2.81 -uroot -pExpenseApp@1 < /app/schema/backend.sql
+    mysql -h 10.1.2.155 -uroot -pExpenseApp@1 < /app/schema/backend.sql
     echo -e "$GREEN Configuring Schema Completed $DEF" >> /var/log/InstallationLogs/$DATE-Install-logs.log
 fi
 systemctl restart backend
 #echo -e "$GREEN Adding Other dependencies...$DEF"
- #  npm install mysql2
+#  npm install mysql2
 #systemctl status backend | grep "active (running)"
 #if [ $? -eq 0 ];then
- #  echo -e "$GREEN Backend Service up and running..$DEF"
-  # else
-   #    echo -e "$RED Backend Service Still failing $DEF"
-    #   exit 1
+#  echo -e "$GREEN Backend Service up and running..$DEF"
+# else
+#    echo -e "$RED Backend Service Still failing $DEF"
+#   exit 1
 #fi
 systemctl daemon-reload
 systemctl restart backend
