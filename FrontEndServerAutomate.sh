@@ -19,28 +19,34 @@ else
     echo -e "$YELLOW Directory does not exist. Creating Now..$DEF"
     mkdir /var/log/InstallLogs/
 fi
-
-Checking_Software()
-{
-  $1 -v > /dev/null 2>&1
-  if [ $? -eq 0 ]; then
-    echo -e "$YELLOW$1 is already Installed..$DEF"
-  else
-      echo -e "$RED$1 is not installed..Installing Now..$DEF"
-      dnf install -y $1 &>>/var/log/InstallLogs/$DATE-Installation.log
+nginx -v &>>/dev/null
+if [ $? -eq 0 ]; then
+   echo "Nginx Web server already Installed..Type in y to redownload the Nginx"
+   read "CHOICE"
+   if [ "$CHOICE" == "y" ]; then
+      echo "Installing Nginx Web server.."
+      dnf install -y nginx &>>/var/log/InstallLogs/$DATE-Installation.log
+      nginx -v &>>/dev/null
       if [ $? -eq 0 ]; then
-         echo -e "$GREEN$1 Successfully Installed..$DEF"
-     else
-         echo -e "$RED Error Installing $1..Please check the Logs"
-         echo -e "Terminating the script..$DEF"
-         exit 1
+         echo "Nginx Successfully Installed.."
+      else 
+          echo "Installing Nginx Failed.."
+          exit 1
+      fi
+    else 
+        echo "Skipping the Installation of Nginx.."
     fi
-  fi
-}
-
-Checking_Software nginx
-systemctl start nginx &>>/dev/null 
-
+else 
+   echo "Installing Nginx Web server.."
+   dnf install -y nginx &>>/var/log/InstallLogs/$DATE-Installation.log
+   nginx -v &>>/dev/null
+      if [ $? -eq 0 ]; then
+         echo "Nginx Successfully Installed.."
+      else 
+          echo "Installing Nginx Failed.."
+          exit 1
+      fi
+fi
 Checking_Conf()
 {
   $1
@@ -60,7 +66,7 @@ LOG_FILE="/var/log/InstallLogs/$DATE-Installation.log"
 
 rm -rf /usr/share/nginx/html/* &>>"$LOG_FILE"
 if [ $? -eq 0 ]; then
-        echo -e "$GREEN Removing HTML Files$DEF" >>"$LOG_FILE"
+        echo -e "$GREEN Removing HTML Files at /usr/share/nginx/html$DEF" >>"$LOG_FILE"
     else
         echo "$RED Failed to remove the Nginx files; please check the logs for more details.$DEF" >&2
         exit 1
@@ -91,6 +97,7 @@ PRE=$(pwd)
 if [ "$PRE" == "/usr/share/nginx/html" ]; then
    echo "Directory changed to /usr/share/nginx/html"
    echo "Unzipping the zip file content.."
+   cd /usr/share/nginx/html
    unzip /tmp/frontend.zip
 else
    echo "Failed to change the directory.."
@@ -106,7 +113,6 @@ location /health {
 }" > /etc/nginx/default.d/expense.conf
 else
     echo "Configuring the expense.conf file"
-    touch /etc/nginx/default.d/expense.conf
     echo "proxy_http_version 1.1;
 location /api/ { proxy_pass http://10.1.2.80:8080/; }
 location /health {
