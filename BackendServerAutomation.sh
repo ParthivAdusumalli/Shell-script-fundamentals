@@ -160,3 +160,4 @@ systemctl restart backend
 #fi
 systemctl daemon-reload
 systemctl restart backend
+echo "Successfully Configured the backend Service..You can check the logs at /var/log/InstallationLogs/$DATE-Install-logs.log"
