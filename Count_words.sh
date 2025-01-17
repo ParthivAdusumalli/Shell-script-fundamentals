@@ -3,7 +3,9 @@
 WORDS=()
 
 while read -r line; do
-      echo "$line" | awk '{for (i=1; i<=NF; i++) WORDS+=$i}'
+      for word in "${line[@]}"; do
+          WORDS+=word
+        done
 done < /etc/passwd
 
 for item in "${WORDS[@]}"; do
